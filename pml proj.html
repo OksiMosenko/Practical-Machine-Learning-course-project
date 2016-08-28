@@ -68,23 +68,22 @@ The data for this project come from this source: http://groupware.les.inf.puc-ri
 <pre class="r"><code>
 library(caret)
 library(corrplot) </code></pre>
+</div>
 <div id="Getting-and-cleaning-data" class="section level3">
 <h3>Getting and cleaning data</h3>
-Training and testing data was downloaded with RStudio functionality. 
-````
+<p> Training and testing data was downloaded with RStudio functionality. </div>
+<pre class="r"><code>
 `pml-training` <- read.csv("/tmp/RtmpwNs13E/datafbc69d61669")
 `pml-testing` <- read.csv("/tmp/RtmpwNs13E/datafbc134e2793")
 train<-`pml-training`
 quiz<-`pml-testing`
-##training set: 19622 obs. of 160 var.
-````
-Replacing all empty and '#DIV/0!' entries with NA
-````
+##training set: 19622 obs. of 160 var. </code></pre>
+<p> Replacing all empty and '#DIV/0!' entries with NA </div>
+<pre class="r"><code>
 train[train=="'#DIV/0!'"]<-NA
-train[train==""]<-NA
-````
-Deleting all columns were are mostly NAs (more than 1/2 of all data)
-````
+train[train==""]<-NA </code></pre>
+<p> Deleting all columns were are mostly NAs (more than 1/2 of all data) </div>
+<pre class="r"><code>
 ### NAcols is a vector with those columns; default there are no NA
 NAcols <- rep(FALSE, ncol(train)) 
 ### Loop over the columns and flag those were are mostly NAs
@@ -95,14 +94,14 @@ for (i in 1:ncol(train)){
 }
 ###delete variables 
 ###now training set: 19622 obs. of 60 var.
-train2 <- train[,!NAcols]
-````
-Deleting columns which are not useful for prediction with: "X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "cvtd_timestamp", "new_window", "num_window"   
-````
+train2 <- train[,!NAcols]  </code></pre>
+<p> Deleting columns which are not useful for prediction with: "X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "cvtd_timestamp", "new_window", "num_window"   
+</div>
+<pre class="r"><code>
 ### they are first 7 columns
 train1 <- train2[,-c(1:7)]
 ###now training set: 19622 obs. of 53 var.
-````
+</code></pre>
 ##Preprocessing
 DataPartition
 ````
