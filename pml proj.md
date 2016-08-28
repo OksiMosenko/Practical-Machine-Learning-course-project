@@ -1,7 +1,8 @@
 
 
 #Used packages
-library(caret)
+
+
 
 #Training and testing data was downloaded with RStudio functionality. 
 pml-testing` <- read.csv("/tmp/RtmpwNs13E/datafbc134e2793")
