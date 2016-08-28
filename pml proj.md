@@ -1,6 +1,17 @@
+#Purpose
+One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, the goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants.The goal of the project is to predict the manner in which they did the exercise. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. This is the "classe" variable in the training set.
+Data
+The training data for this project are available here:
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+The test data are available here:
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+The data for this project come from this source: http://groupware.les.inf.puc-rio.br/har
 
+#Overview
+Firstly the data is cleaned by excluding variables not useful for prediction because they contain too much NA data or do not influence the exercise manner. During preprocessing correlated variable are excluded to avoid overfitting and working out too much input, preprocessing with PC gave 20% lower accuracy so isn`t used in the final model. Model fitting was done with boosting which is one of the most accurate methods and worked on my laptop much faster than random forest method. I also tryed regression trees, but the accuracy was very low in this case. During model fitting cross validation on 3 sets is applyed. The accuracy gained is 
+For its reproducible, I use set.seed, 
 
-#Used packages
+##Used packages
 
 
 
@@ -76,12 +87,3 @@ quiz3<-quiz1[, -highlyCor]
 answers <- predict(model_gbm, newdata=quiz)
 print(answers)
 
-## Save the 20 files 
-pml_write_files = function(x){
-  n = length(x)
-  for(i in 1:n){
-    filename = paste0("problem_id_",i,".txt")
-    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
-  }
-}
-pml_write_files(answers)
