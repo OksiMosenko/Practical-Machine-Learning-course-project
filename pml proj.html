@@ -1,4 +1,3 @@
-
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -102,16 +101,17 @@ train2 <- train[,!NAcols]  </code></pre>
 train1 <- train2[,-c(1:7)]
 ###now training set: 19622 obs. of 53 var.
 </code></pre>
-##Preprocessing
-DataPartition
-````
+<div id="Preprocessing" class="section level3">
+<h3>Preprocessing</h3>
+<p> DataPartition </div>
+<pre class="r"><code>
 set.seed(3433)
 inTrain<-createDataPartition(y=train3$classe, p=0.75, list=FALSE)
 training<-train1[inTrain,]
 validation<-train1[-inTrain,]
-```
-Finding and excluding correlated variables
-````
+</code></pre>
+<p> Finding and excluding correlated variables </div>
+<pre class="r"><code>
 corMat <- cor(training[,-dim(training)[2]]) 
 corrplot(corMat, method = "color", type="lower", order="hclust", tl.cex = 0.65, tl.col="black", tl.srt = 45)
 ## Extract highly, r > 0.8, correlated variables and take them out of the training dataset
@@ -119,33 +119,46 @@ highlyCor <- findCorrelation(corMat, cutoff = 0.8)
 training1<- training[,-highlyCor]
 validation1<-validation[, -highlyCor]
 ###now 41 var.s
-````
-
-##Model fitting
-````
+</code></pre>
+<div id="Model-fitting" class="section level3">
+<h3>Model fitting</h3>
+<pre class="r"><code>
 set.seed(134)
 ##boosting
 trainControl <- trainControl(method='cv', number = 3)
 model_gbm <- train(classe ~ ., data=training1, trControl=trainControl, method='gbm', verbose=FALSE)
-````
-#Validation
-Applying predictions
-````
+</code></pre>
+<div id="Validation" class="section level3">
+<h3>Validation</h3>
+<p> Applying predictions </div>
+<pre class="r"><code>
 pred_gbm <- predict(model_gbm , newdata=validation1)
-```
-Extraction of the confusion matrix to assess model validity
-````
+</code></pre>
+<p> Extraction of the confusion matrix to assess model validity</div>
+<pre class="r"><code>
 confMat_gbm <- confusionMatrix(pred_gbm, validation1$classe)
 confMat_gbm
-````
-#Prediction
-````
+</code></pre>
+<div id="Prediction" class="section level2">
+<h2>Prediction</h2>
+<pre class="r"><code>
 quiz2 <- quiz[,!NAcols]
 quiz1 <- quiz2[,-c(1:7)]
 quiz3<-quiz1[, -highlyCor]
 answers <- predict(model_gbm, newdata=quiz)
 print(answers)
-````
+</code></pre>
+</div>
+
+
+</div>
+
+<script>
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
 </script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
