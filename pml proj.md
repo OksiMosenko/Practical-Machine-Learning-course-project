@@ -14,6 +14,7 @@ Firstly the data is cleaned by excluding variables not useful for prediction bec
 ##Used packages
 ````
 library(caret)
+library(corrplot)
 ````
 ##Getting and cleaning data
 Training and testing data was downloaded with RStudio functionality. 
@@ -75,7 +76,7 @@ set.seed(134)
 trainControl <- trainControl(method='cv', number = 3)
 model_gbm <- train(classe ~ ., data=training1, trControl=trainControl, method='gbm', verbose=FALSE)
 ````
-#Validation
+##Validation
 Applying predictions
 ````
 pred_gbm <- predict(model_gbm , newdata=validation1)
