@@ -7,7 +7,7 @@ The test data are available here:
 https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
 The data for this project come from this source: http://groupware.les.inf.puc-rio.br/har
 
-#Overview
+#Overview and conclusion
 Firstly the data is cleaned by excluding variables not useful for prediction because they contain too much NA data or do not influence the exercise manner. During preprocessing correlated variable are excluded to avoid overfitting and working out too much input, preprocessing with PC gave 20% lower accuracy so isn`t used in the final model. Model fitting was done with boosting which is one of the most accurate methods and worked on my laptop much faster than random forest method. I also tryed regression trees, but the accuracy was very low in this case. During model fitting cross validation on 3 sets is applyed. The accuracy gained is 0.9551, the expected out of sample error is 0.0449. The result is reasonably good and allows to pass the project quiz, where 80% of right answers are needed. For reproducibility, I use set.seed.
 
 #Project flow
@@ -43,7 +43,7 @@ for (i in 1:ncol(train)){
 ###now training set: 19622 obs. of 60 var.
 train2 <- train[,!NAcols]
 ````
-Deleting columns which are not useful for parediction with: "X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "cvtd_timestamp", "new_window", "num_window"   
+Deleting columns which are not useful for prediction with: "X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "cvtd_timestamp", "new_window", "num_window"   
 ````
 ### they are first 7 columns
 train1 <- train2[,-c(1:7)]
@@ -85,7 +85,7 @@ Extraction of the confusion matrix to assess model validity
 confMat_gbm <- confusionMatrix(pred_gbm, validation1$classe)
 confMat_gbm
 ````
-#Runing model on the testing dataset
+#Prediction
 ````
 quiz2 <- quiz[,!NAcols]
 quiz1 <- quiz2[,-c(1:7)]
