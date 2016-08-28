@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640">
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen">
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Practical-machine-learning-course-project by OksiMosenko</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/OksiMosenko/Practical-Machine-Learning-course-project">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Practical-machine-learning-course-project</h1>
+            <h2>Data Science specialisation from JHU on Coursera, Practical Machine Learning_ course project</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/OksiMosenko/Practical-Machine-Learning-course-project/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/OksiMosenko/Practical-Machine-Learning-course-project/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>
+<a id="purpose" class="anchor" href="#purpose" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Purpose</h1>
+
+<p>One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, the goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants.The goal of the project is to predict the manner in which they did the exercise. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. This is the "classe" variable in the training set.
+Data
+The training data for this project are available here:
+<a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv">https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv</a>
+The test data are available here:
+<a href="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv">https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv</a>
+The data for this project come from this source: <a href="http://groupware.les.inf.puc-rio.br/har">http://groupware.les.inf.puc-rio.br/har</a></p>
+
+<h1>
+<a id="overview-and-conclusion" class="anchor" href="#overview-and-conclusion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview and conclusion</h1>
+
+<p>Firstly the data is cleaned by excluding variables not useful for prediction because they contain too much NA data or do not influence the exercise manner. During preprocessing correlated variable are excluded to avoid overfitting and working out too much input, preprocessing with PC gave 20% lower accuracy so isn`t used in the final model. Model fitting was done with boosting which is one of the most accurate methods and worked on my laptop much faster than random forest method. I also tryed regression trees, but the accuracy was very low in this case. During model fitting cross validation on 3 sets is applyed. The accuracy gained is 0.9551, the expected out of sample error is 0.0449. The result is reasonably good and allows to pass the project quiz, where 80% of right answers are needed. For reproducibility, I use set.seed.</p>
+
+<h1>
+<a id="project-flow" class="anchor" href="#project-flow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project flow</h1>
+
+<h2>
+<a id="used-packages" class="anchor" href="#used-packages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Used packages</h2>
+
+<pre><code>library(caret)
+library(corrplot)
+</code></pre>
+
+<h2>
+<a id="getting-and-cleaning-data" class="anchor" href="#getting-and-cleaning-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting and cleaning data</h2>
+
+<p>Training and testing data was downloaded with RStudio functionality. </p>
+
+<pre><code>`pml-training` &lt;- read.csv("/tmp/RtmpwNs13E/datafbc69d61669")
+`pml-testing` &lt;- read.csv("/tmp/RtmpwNs13E/datafbc134e2793")
+train&lt;-`pml-training`
+quiz&lt;-`pml-testing`
+##training set: 19622 obs. of 160 var.
+</code></pre>
+
+<p>Replacing all empty and '#DIV/0!' entries with NA</p>
+
+<pre><code>train[train=="'#DIV/0!'"]&lt;-NA
+train[train==""]&lt;-NA
+</code></pre>
+
+<p>Deleting all columns were are mostly NAs (more than 1/2 of all data)</p>
+
+<pre><code>### NAcols is a vector with those columns; default there are no NA
+NAcols &lt;- rep(FALSE, ncol(train)) 
+### Loop over the columns and flag those were are mostly NAs
+for (i in 1:ncol(train)){
+  if (sum(is.na(train[,i]))&gt;10000){
+    NAcols[i]&lt;-T
+  }
+}
+###delete variables 
+###now training set: 19622 obs. of 60 var.
+train2 &lt;- train[,!NAcols]
+</code></pre>
+
+<p>Deleting columns which are not useful for prediction with: "X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "cvtd_timestamp", "new_window", "num_window"   </p>
+
+<pre><code>### they are first 7 columns
+train1 &lt;- train2[,-c(1:7)]
+###now training set: 19622 obs. of 53 var.
+</code></pre>
+
+<h2>
+<a id="preprocessing" class="anchor" href="#preprocessing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preprocessing</h2>
+
+<p>DataPartition</p>
+
+<pre><code>set.seed(3433)
+inTrain&lt;-createDataPartition(y=train3$classe, p=0.75, list=FALSE)
+training&lt;-train1[inTrain,]
+validation&lt;-train1[-inTrain,]
+</code></pre>
+
+<p>Finding and excluding correlated variables</p>
+
+<pre><code>corMat &lt;- cor(training[,-dim(training)[2]]) 
+corrplot(corMat, method = "color", type="lower", order="hclust", tl.cex = 0.65, tl.col="black", tl.srt = 45)
+## Extract highly, r &gt; 0.8, correlated variables and take them out of the training dataset
+highlyCor &lt;- findCorrelation(corMat, cutoff = 0.8)
+training1&lt;- training[,-highlyCor]
+validation1&lt;-validation[, -highlyCor]
+###now 41 var.s
+</code></pre>
+
+<h2>
+<a id="model-fitting" class="anchor" href="#model-fitting" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Model fitting</h2>
+
+<pre><code>set.seed(134)
+##boosting
+trainControl &lt;- trainControl(method='cv', number = 3)
+model_gbm &lt;- train(classe ~ ., data=training1, trControl=trainControl, method='gbm', verbose=FALSE)
+</code></pre>
+
+<h2>
+<a id="validation" class="anchor" href="#validation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Validation</h2>
+
+<p>Applying predictions</p>
+
+<pre><code>pred_gbm &lt;- predict(model_gbm , newdata=validation1)
+</code></pre>
+
+<p>Extraction of the confusion matrix to assess model validity</p>
+
+<pre><code>confMat_gbm &lt;- confusionMatrix(pred_gbm, validation1$classe)
+confMat_gbm
+</code></pre>
+
+<h1>
+<a id="prediction" class="anchor" href="#prediction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Prediction</h1>
+
+<pre><code>quiz2 &lt;- quiz[,!NAcols]
+quiz1 &lt;- quiz2[,-c(1:7)]
+quiz3&lt;-quiz1[, -highlyCor]
+answers &lt;- predict(model_gbm, newdata=quiz)
+print(answers)
+</code></pre>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/OksiMosenko">OksiMosenko</a> can be found on <a href="https://github.com/OksiMosenko/Practical-Machine-Learning-course-project">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="https://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
