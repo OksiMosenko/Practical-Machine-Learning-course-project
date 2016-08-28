@@ -101,6 +101,7 @@ train2 <- train[,!NAcols]  </code></pre>
 train1 <- train2[,-c(1:7)]
 ###now training set: 19622 obs. of 53 var.
 </code></pre>
+</div>
 <div id="Preprocessing" class="section level3">
 <h3>Preprocessing</h3>
 <p> DataPartition </div>
@@ -120,6 +121,7 @@ training1<- training[,-highlyCor]
 validation1<-validation[, -highlyCor]
 ###now 41 var.s
 </code></pre>
+</div>
 <div id="Model-fitting" class="section level3">
 <h3>Model fitting</h3>
 <pre class="r"><code>
@@ -128,6 +130,7 @@ set.seed(134)
 trainControl <- trainControl(method='cv', number = 3)
 model_gbm <- train(classe ~ ., data=training1, trControl=trainControl, method='gbm', verbose=FALSE)
 </code></pre>
+</div>
 <div id="Validation" class="section level3">
 <h3>Validation</h3>
 <p> Applying predictions </div>
@@ -139,6 +142,7 @@ pred_gbm <- predict(model_gbm , newdata=validation1)
 confMat_gbm <- confusionMatrix(pred_gbm, validation1$classe)
 confMat_gbm
 </code></pre>
+</div>
 <div id="Prediction" class="section level2">
 <h2>Prediction</h2>
 <pre class="r"><code>
@@ -153,13 +157,6 @@ print(answers)
 
 </div>
 
-<script>
-// add bootstrap table styles to pandoc tables
-$(document).ready(function () {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-});
-
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
